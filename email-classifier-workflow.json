@@ -1,0 +1,349 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6e85d9df-6ad2-48ca-ab32-db0a236dfa33",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9LygFs00vtUE35Zt",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a17339f1-c93f-4209-8d37-20c4e15d5a25",
+              "name": "subject",
+              "value": "={{$node[\"Gmail Trigger\"].json[\"Subject\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "9a05e223-27b9-412a-b427-f7414b1c3e5f",
+              "name": "sender",
+              "value": "={{$node[\"Gmail Trigger\"].json[\"From\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "12fa0dfe-9df1-414f-96ab-973eb2893248",
+              "name": "content",
+              "value": "={{$node[\"Gmail Trigger\"].json[\"snippet\"]}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "5b8d0528-8cbe-4b7b-abe2-99460a1ed8ce",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0fe47054-90ea-47d9-aa47-b68a076ed8b0",
+              "leftValue": "={{ $json.subject }}",
+              "rightValue": "meeting",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "a8e8e9f7-d741-4a6a-8f1b-c185c3d27063",
+              "leftValue": "={{ $json.subject }}",
+              "rightValue": "interview",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "a5afa87d-e9f6-47e3-8343-c40aa03ec8e3",
+              "leftValue": "={{ $json.content }}",
+              "rightValue": "deadline",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "bdcca4da-1606-4516-acde-a9c8e3201451",
+              "leftValue": "={{ $json.sender }}",
+              "rightValue": "company",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "44a8f141-0133-4fb0-bae6-fc7ad66185f1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{$node[\"Gmail Trigger\"].json[\"id\"]}}",
+        "labelIds": [
+          "Label_3411487019911946832"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "a52110c7-c185-428e-9b76-4904e9619133",
+      "name": "Add label to message",
+      "webhookId": "0c4bdaba-9dd4-47fe-a5a7-b089847a4df3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9LygFs00vtUE35Zt",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6137151b-acb3-4870-bc03-e6f4c23e9de0",
+              "leftValue": "={{ $json.sender }}",
+              "rightValue": "gmail.com",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "d8e4606f-feb0-480c-b93d-f30096b81391",
+              "leftValue": "={{ $json.subject }}",
+              "rightValue": "birthday",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "2effa25e-b576-4c7f-8183-3ad8a8620dcd",
+              "leftValue": "={{ $json.content }}",
+              "rightValue": "party",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "e4d9f120-85cc-4843-b739-83d19507e0f7",
+              "leftValue": "={{ $json.content }}",
+              "rightValue": "trip",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "6ee07910-e937-4dbf-9258-1d9b4e0a3ee6",
+              "leftValue": "={{ $('Edit Fields').item.json.sender }}",
+              "rightValue": "google",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "8d82b84c-017b-494e-a9fd-0065e0bffa89",
+              "leftValue": "={{ $('Edit Fields').item.json.subject }}",
+              "rightValue": "security",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        624,
+        96
+      ],
+      "id": "18f1ced2-7e5d-45bb-9f47-18f6c39f2db6",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{$node[\"Gmail Trigger\"].json[\"id\"]}}",
+        "labelIds": [
+          "Label_621950785383909449"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "9b620a6d-8c33-4d6f-8325-3787acf849f2",
+      "name": "Add label to message1",
+      "webhookId": "df149fe0-6f57-4a3d-b422-db549f7c19a0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9LygFs00vtUE35Zt",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{$node[\"Gmail Trigger\"].json[\"id\"]}}",
+        "labelIds": [
+          "Label_6104257906828806200"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        832,
+        192
+      ],
+      "id": "d27a1903-2605-4774-91f3-18f72aab0fec",
+      "name": "Add label to message2",
+      "webhookId": "5a0a3bf5-f489-411e-9146-fb6dc41b5f95",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9LygFs00vtUE35Zt",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Add label to message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Add label to message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add label to message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3f7df983-f732-4205-a93f-860ff2f746a6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2178779140f8815d712998d80252b066da94eb63b4c04848fa66f0cfd5056aff"
+  },
+  "id": "DdlMDSkPKs9akJ19",
+  "tags": []
+}
